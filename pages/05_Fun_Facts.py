@@ -2,9 +2,10 @@ import streamlit as st
 import plotly.express as px
 from utils.gbfs import merged_station_frame
 from utils.plots import top_stations_bar, utilization_hist
-from utils.badges import award_badge
+from utils.badges import award_badge, track_page_visit
 
 st.set_page_config(page_title="Fun Facts • RidePulse NYC", page_icon="🎉", layout="wide")
+track_page_visit("Fun Facts")
 award_badge("fact_finder")
 
 st.title("🎉 Fun Facts — Live and Auto-Generated")

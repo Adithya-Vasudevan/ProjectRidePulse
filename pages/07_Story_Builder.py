@@ -3,9 +3,10 @@ import pandas as pd
 import plotly.express as px
 from utils.gbfs import merged_station_frame, get_snapshot_history
 from utils.plots import top_stations_bar
-from utils.badges import award_badge
+from utils.badges import award_badge, track_page_visit
 
 st.set_page_config(page_title="Story Builder • RidePulse NYC", page_icon="📖", layout="wide")
+track_page_visit("Story Builder")
 award_badge("storyteller")
 
 st.title("📖 Story Builder — Auto Narrative")

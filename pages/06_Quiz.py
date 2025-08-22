@@ -1,7 +1,9 @@
 import streamlit as st
-from utils.badges import award_badge
+from utils.badges import award_badge, track_page_visit
 
 st.set_page_config(page_title="Quiz • RidePulse NYC", page_icon="🧩", layout="wide")
+track_page_visit("Quiz")
+
 st.title("🧩 Citi Bike Quiz")
 
 QUESTIONS = [
