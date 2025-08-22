@@ -1,10 +1,11 @@
 import streamlit as st
 from datetime import datetime
+from streamlit_plotly_events import plotly_events  # NEW: for click interactions
 from utils.gbfs import merged_station_frame, record_snapshot_if_due, get_snapshot_history
-from utils.plots import kpi_cards, top_stations_bar, short_term_trend_chart
+from utils.plots import kpi_cards, top_stations_bar, short_term_trend_chart, station_utilization_gauge  # UPDATED
 from utils.helpers import human_time
 from utils.ui import show_lottie
-from utils.badges import init_badges, render_badges
+from utils.badges import init_badges, render_badges, track_page_visit  # UPDATED
 from utils.theme import inject_css
 
 st.set_page_config(
@@ -28,6 +29,7 @@ with st.sidebar:
 
 # Initialize achievements system
 init_badges()
+track_page_visit("Overview")  # NEW: Counts toward 'Explorer'
 
 # Animated header
 col_a, col_b = st.columns([1, 3])
@@ -60,7 +62,27 @@ with left:
 
 with right:
     st.subheader("🏆 Top Stations by Available Bikes (Live)")
-    st.plotly_chart(top_stations_bar(df, n=12), use_container_width=True)
+    # Interactive bar: click a bar to drill down
+    fig_bar = top_stations_bar(df, n=12)
+    selected = plotly_events(fig_bar, click_event=True, hover_event=False, select_event=False, key="top_stations_click")
+    if selected:
+        cd = selected[0].get("customdata") or []
+        # customdata: [name, percent_full, bikes, docks]
+        if cd:
+            st.markdown("---")
+            station_name = cd[0]
+            bikes = int(cd[2])
+            docks = int(cd[3])
+            capacity = max(bikes + docks, 1)
+            st.markdown(f"**{station_name}**")
+            st.plotly_chart(station_utilization_gauge(station_name, bikes, capacity), use_container_width=True)
+            cA, cB, cC = st.columns(3)
+            cA.metric("Bikes", bikes)
+            cB.metric("Docks", docks)
+            cC.metric("Utilization", f"{(bikes/capacity)*100:.1f}%")
+    else:
+        # Non-interactive fallback render
+        st.plotly_chart(fig_bar, use_container_width=True)
 
 st.markdown("#### 🗓 Last Updated")
 st.caption(human_time(datetime.utcnow()) + " UTC • Record a new snapshot roughly every minute when you refresh")
