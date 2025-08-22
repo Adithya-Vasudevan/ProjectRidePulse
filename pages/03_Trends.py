@@ -2,9 +2,10 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from utils.gbfs import get_snapshot_history
-from utils.badges import award_badge
+from utils.badges import award_badge, track_page_visit
 
 st.set_page_config(page_title="Trends • RidePulse NYC", page_icon="📈", layout="wide")
+track_page_visit("Trends")
 award_badge("trend_hunter")
 
 st.title("📈 Trends from Recent Snapshots")
